@@ -35,9 +35,12 @@
 
     <!-- Our scene uses the ar component. -->
     <a-scene ar>
-      <!-- When we have a raycaster hit, we use this ball to show where. -->
-      <!-- <a-sphere id="ball" radius="0.01" position="0 0.005 -0.5" color="green"></a-sphere> -->
-      <a-entity id="ball" material="color: #00FF00; shader: flat" geometry="primitive: ring; radiusInner: 0.035; radiusOuter: .05; segments-phi: 50" rotation="-90 0 0"></a-entity>
+      <!-- When we have a raycaster hit, we use this ring to show where. -->
+      <a-entity id="placering" material="color: #00FF00; shader: flat"
+        geometry="primitive: ring; radiusInner: 0.04; radiusOuter: .05; segments-phi: 10; segments-theta: 60" rotation="-90 0 0"
+        visible="false">
+      </a-entity>
+
       <a-camera>
         <!-- A hit from AR, rather than A-Frame objects, hits this entity. -->
         <a-entity id="ar-world"></a-entity>
@@ -75,21 +78,18 @@
           var distance = evt.detail.intersections[0].distance;
           var el = evt.detail.els[0];
           showHUD('Touch to place item');
-          if (el.getAttribute('class') === 'plane') { el.setAttribute('opacity', 1.0); }
-          ball.setAttribute('position', point);
-          ball.setAttribute('visible', true);
+          placering.setAttribute('position', point);
+          placering.setAttribute('visible', true);
         });
         raycaster.addEventListener('raycaster-intersection-cleared', function (evt) {
           var el = evt.detail.el;
           showHUD('Please point device at a flat surface');
-          if (el.getAttribute('class') === 'plane') { el.setAttribute('opacity', 0.5); }
-          // ball.setAttribute('visible', false);
+          placering.setAttribute('visible', false);
         });
       }
       
       function addEventListeners() {
         addARRaycasterListeners();
-        addPlaneListeners();
       }      
       
       function onSceneLoaded() { 
@@ -104,15 +104,26 @@
           var cursor = sc.querySelector('[ar-raycaster]').components.cursor;
           if (cursor.intersection) {
             var marker = document.createElement('a-box');
-            marker.setAttribute('width', 0.01);
-            marker.setAttribute('depth', 0.01);
-            marker.setAttribute('height', 1);
+            marker.setAttribute('width', 0.05);
+            marker.setAttribute('depth', 0.05);
+            marker.setAttribute('height', 0.05 );
             marker.setAttribute('color', 'orange');
+            let height = marker.getAttribute('height')
             marker.setAttribute('position', {
               x: cursor.intersection.point.x, 
-              y: cursor.intersection.point.y + 0.5, 
+              y: cursor.intersection.point.y + (height/2),  //+ 0.5, 
               z: cursor.intersection.point.z});
-            sc.appendChild(marker);         
+            sc.appendChild(marker);  
+            // var marker = document.createElement('a-box');
+            // marker.setAttribute('width', 0.01);
+            // marker.setAttribute('depth', 0.01);
+            // marker.setAttribute('height', 1);
+            // marker.setAttribute('color', 'orange');
+            // marker.setAttribute('position', {
+            //   x: cursor.intersection.point.x, 
+            //   y: cursor.intersection.point.y + 0.5, 
+            //   z: cursor.intersection.point.z});
+            // sc.appendChild(marker);         
           }
           
           // Show plane info on click.
