@@ -11,7 +11,7 @@
     <!-- Last, include aframe-ar. -->
     <script src="./temp/aframe-ar.min.js"></script>    
     <!-- Include XZ grid shader. -->
-    <script src="./temp/grid-shader.js"></script>
+    <!-- <script src="./temp/grid-shader.js"></script> -->
 
     <!-- Include polygon component. -->
     <script src="./temp/polygon.js"></script>
@@ -31,13 +31,13 @@
     </script>    
 
     <!-- Include planes handling example code. -->
-    <script src="./temp/planes-example.js"></script>        
+    <!--<script src="./temp/planes-example.js"></script> -->
 
     <!-- Our scene uses the ar component. -->
     <a-scene ar>
       <!-- When we have a raycaster hit, we use this ball to show where. -->
-      <a-sphere id="ball" radius="0.01" position="0 0.005 -0.5"></a-sphere>
-
+      <!-- <a-sphere id="ball" radius="0.01" position="0 0.005 -0.5" color="green"></a-sphere> -->
+      <a-entity id="ball" material="color: #00FF00; shader: flat" geometry="primitive: ring; radiusInner: 0.035; radiusOuter: .05; segments-phi: 50" rotation="-90 0 0"></a-entity>
       <a-camera>
         <!-- A hit from AR, rather than A-Frame objects, hits this entity. -->
         <a-entity id="ar-world"></a-entity>
@@ -56,9 +56,9 @@
         
         <!-- Heads-up text display. -->
         <a-text id="hud" 
-                scale="0.01 0.01 0.01" position="0 -0.025 -0.1" 
-                color="yellow" align="center" 
-                value="Hi there"></a-text>
+                scale="0.015 0.015 0.015" position="0 -0.05 -0.1" 
+                color="white" align="center" 
+                value="Looking for plane"></a-text>
       </a-camera>
     </a-scene>    
     
@@ -74,16 +74,16 @@
           var point = evt.detail.intersections[0].point;
           var distance = evt.detail.intersections[0].distance;
           var el = evt.detail.els[0];
-          showHUD('raycaster-intersection ' + distance + '\n' + JSON.stringify(point) + '\n' + el.id /*el.outerHTML*/);
+          showHUD('Touch to place item');
           if (el.getAttribute('class') === 'plane') { el.setAttribute('opacity', 1.0); }
           ball.setAttribute('position', point);
           ball.setAttribute('visible', true);
         });
         raycaster.addEventListener('raycaster-intersection-cleared', function (evt) {
           var el = evt.detail.el;
-          showHUD('raycaster-intersection-cleared\n' + el.outerHTML);
+          showHUD('Please point device at a flat surface');
           if (el.getAttribute('class') === 'plane') { el.setAttribute('opacity', 0.5); }
-          ball.setAttribute('visible', false);
+          // ball.setAttribute('visible', false);
         });
       }
       
@@ -117,6 +117,7 @@
           
           // Show plane info on click.
           // (may not have arDisplay until tick after loaded)
+          /*
           var ardisplay = sc.components['three-ar'].arDisplay;
           if (!ardisplay) { showHUD('no ardisplay?'); } else {
             // Old versions of WebARonARKit don't expose getPlanes() correctly.
@@ -124,25 +125,11 @@
 
             var keys = Object.keys(sc.components['ar-planes'].planes);
             var msg = planes.length + ' (vs. ' + keys.length + ': ' + keys.join(',') + ')\n\n';
-/*           
-            planes.forEach(function (plane) {
-              // Decompose into pos / quat / scale, and make euler.
-              tempMat4.fromArray(plane.modelMatrix);
-              tempMat4.decompose(tempPos, tempQuat, tempScale);
-              tempEuler.setFromQuaternion(tempQuat);
-
-              // Write out what we got, for debugging.
-              msg += 
-              'identifier: ' + plane.identifier + '' + // string, per latest spec
-              ' ' + JSON.stringify(tempPos) + ''
-              ' ' + JSON.stringify(tempEuler.toVector3().multiplyScalar(THREE.Math.RAD2DEG)) + '' + 
-              ' ' + plane.extent + '\n' + // number[2], per latest spec
-              (plane.vertices ? ('vertices: ' + plane.vertices.length + '\n') : '') + // number[3*n], per latest spec
-              '';
-            });
-*/            
+      
             showHUD(msg);
+            
           }
+          */
         });
         
         addEventListeners();
