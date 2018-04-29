@@ -35,6 +35,10 @@
 
     <!-- Our scene uses the ar component. -->
     <a-scene ar>
+      <a-assets>
+        <a-asset-item id="f4u" src="models/f4u/scene.gltf"></a-asset-item>
+      </a-assets>
+        
       <!-- When we have a raycaster hit, we use this ring to show where. -->
       <a-entity id="placering" material="color: #00FF00; shader: flat"
         geometry="primitive: ring; radiusInner: 0.04; radiusOuter: .05; segments-phi: 10; segments-theta: 60" rotation="-90 0 0"
@@ -52,10 +56,10 @@
                   ar-raycaster="el:#ar-world"></a-entity>
         
         <!-- Separate the cursor appearance.-->
-        <a-entity position="0 0 -0.1"
+        <!-- <a-entity position="0 0 -0.1"
                   scale="0.001 0.001 0.001"
                   geometry="primitive: ring; radiusInner: 0.8; radiusOuter: 1" 
-                  material="color: yellow; shader: flat; transparent:true"></a-entity>
+                  material="color: yellow; shader: flat; transparent:true"></a-entity> -->
         
         <!-- Heads-up text display. -->
         <a-text id="hud" 
@@ -66,6 +70,7 @@
     </a-scene>    
     
     <script>
+      var counter = 0
       var sc = document.querySelector('a-scene');
       function showHUD(msg) { sc.querySelector('#hud').setAttribute('value', msg); }
       
@@ -77,7 +82,11 @@
           var point = evt.detail.intersections[0].point;
           var distance = evt.detail.intersections[0].distance;
           var el = evt.detail.els[0];
-          showHUD('Touch to place item');
+          if (counter !== 0) {
+            showHUD('Touch to move item')
+          } else {
+            showHUD('Touch to place item');
+          }
           placering.setAttribute('position', point);
           placering.setAttribute('visible', true);
         });
@@ -101,30 +110,39 @@
         
         window.addEventListener('click', function() {
           // If the cursor has an intersection, place a marker.
+          counter += 1
           var cursor = sc.querySelector('[ar-raycaster]').components.cursor;
           if (cursor.intersection) {
-            var marker = document.createElement('a-box');
-            marker.setAttribute('width', 0.05);
-            marker.setAttribute('depth', 0.05);
-            marker.setAttribute('height', 0.05 );
-            marker.setAttribute('color', 'orange');
-            let height = marker.getAttribute('height')
-            marker.setAttribute('position', {
+            var obj = document.getElementById('f4uModel')
+            if(obj) {
+              obj.setAttribute('position', {
               x: cursor.intersection.point.x, 
-              y: cursor.intersection.point.y + (height/2),  //+ 0.5, 
+              y: cursor.intersection.point.y + .09,  //+ 0.5, 
               z: cursor.intersection.point.z});
-            sc.appendChild(marker);  
-            // var marker = document.createElement('a-box');
-            // marker.setAttribute('width', 0.01);
-            // marker.setAttribute('depth', 0.01);
-            // marker.setAttribute('height', 1);
-            // marker.setAttribute('color', 'orange');
-            // marker.setAttribute('position', {
-            //   x: cursor.intersection.point.x, 
-            //   y: cursor.intersection.point.y + 0.5, 
-            //   z: cursor.intersection.point.z});
-            // sc.appendChild(marker);         
-          }
+            } else {
+              var newObj = document.createElement('a-entity');
+              newObj.setAttribute('gltf-model', '#f4u')
+              newObj.setAttribute('scale', '0.05 0.05 0.05')
+              newObj.setAttribute('id', 'f4uModel')
+              newObj.setAttribute('position', {
+              x: cursor.intersection.point.x, 
+              y: cursor.intersection.point.y + .09,  //+ 0.5, 
+              z: cursor.intersection.point.z});
+              sc.appendChild(newObj);  
+              // var marker = document.createElement('a-box');
+              // marker.setAttribute('width', 0.01);
+              // marker.setAttribute('depth', 0.01);
+              // marker.setAttribute('height', 1);
+              // marker.setAttribute('color', 'orange');
+              // marker.setAttribute('position', {
+              //   x: cursor.intersection.point.x, 
+              //   y: cursor.intersection.point.y + 0.5, 
+              //   z: cursor.intersection.point.z});
+              // sc.appendChild(marker);         
+            }
+
+
+            }
           
           // Show plane info on click.
           // (may not have arDisplay until tick after loaded)
@@ -141,10 +159,12 @@
             
           }
           */
+          
         });
         
         addEventListeners();
       }
+      
       
       if (sc.hasLoaded) { onSceneLoaded(); }
       else { sc.addEventListener('loaded', onSceneLoaded); }
