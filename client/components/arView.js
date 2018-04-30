@@ -149,5 +149,5 @@ class ArView extends React.Component {
   }
 } 
 
-ReactDOM.render(<ArView />, document.querySelector('#app'))
+//ReactDOM.render(<ArView />, document.querySelector('#app'))
 //export default ArView
