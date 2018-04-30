@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server/app.js",
-    "start:dev": " nodemon server/app.js --ignore public",
+    "start:dev": " webpack -w & nodemon server/app.js --ignore public",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -13,6 +13,7 @@
   "dependencies": {
     "@tmkelly28/tk-css": "^1.0.2",
     "aframe-ar": "^0.2.1-a",
+    "aframe-react": "^4.4.0",
     "axios": "^0.18.0",
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
